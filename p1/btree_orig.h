@@ -1,76 +1,76 @@
-// From http://www.cprogramming.com/tutorial/lesson18.html 
+#include <memory>
+
+using namespace std;
+
 struct node
 {
   int key_value;
-  node *left;
-  node *right;
+  shared_ptr<node> left;
+  shared_ptr<node> right;
 };
 
 class btree
 {
     public:
-		btree() { 
-			root = NULL;
-		}
-		~btree() {
-			destroy_tree();
-		}
-
 		void insert(int key) {
-			if (root != NULL)
+			if (root != nullptr)
 				insert(key, root);
 			else
 			{
-				root = new node;
+				root = make_shared<node>();
 				root->key_value = key;
-				root->left = NULL;
-				root->right = NULL;
 			}
 		}
-		node *search(int key) {
+		shared_ptr<node> search(int key) {
 			return search(key, root);
 		}
-		void destroy_tree() {
-			destroy_tree(root);
+
+        btree copy() {
+            btree tree;
+			tree.root = copy(root);
+            return tree;
 		}
 
     private:
-		void destroy_tree(node *leaf) {
-			if (leaf != NULL)
-			{
-				destroy_tree(leaf->left);
-				destroy_tree(leaf->right);
-				delete leaf;
-			}
-		}
-		void insert(int key, node *leaf) {
+        shared_ptr<node> root;
+
+        shared_ptr<node> copy(shared_ptr<node> originalRoot) {
+            if (originalRoot == nullptr) {
+                return nullptr;
+            }
+
+            shared_ptr<node> newRoot = make_shared<node>();
+
+            newRoot->key_value = originalRoot->key_value;
+            newRoot->left = copy(originalRoot->left);
+            newRoot->right = copy(originalRoot->right);
+
+            return newRoot;
+        }
+		void insert(int key, shared_ptr<node>& leaf) {
 			if (key< leaf->key_value)
 			{
-				if (leaf->left != NULL)
+				if (leaf->left != nullptr)
 					insert(key, leaf->left);
 				else
 				{
-					leaf->left = new node;
+					leaf->left = make_shared<node>();
 					leaf->left->key_value = key;
-					leaf->left->left = NULL;    //Sets the left child of the child node to null
-					leaf->left->right = NULL;   //Sets the right child of the child node to null
 				}
 			}
 			else if (key >= leaf->key_value)
 			{
-				if (leaf->right != NULL)
+				if (leaf->right != nullptr)
 					insert(key, leaf->right);
 				else
 				{
-					leaf->right = new node;
+					leaf->right = make_shared<node>();
 					leaf->right->key_value = key;
-					leaf->right->left = NULL;  //Sets the left child of the child node to null
-					leaf->right->right = NULL; //Sets the right child of the child node to null
 				}
 			}
 		}
-		node *search(int key, node *leaf) {
-			if (leaf != NULL)
+		shared_ptr<node> search(int key, shared_ptr<node> leaf) {
+			if (leaf != nullptr)
 			{
 				if (key == leaf->key_value)
 					return leaf;
@@ -79,10 +79,8 @@ class btree
 				else
 					return search(key, leaf->right);
 			}
-			else return NULL;
+			else return nullptr;
 		}
-
-        node *root;
 };
 
 
