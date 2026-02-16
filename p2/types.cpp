@@ -3,6 +3,10 @@
 int foo() { return 0; }
 void bar(void (*)()) {}
 
+char *stcat(char *x, char *y) {
+    return strcat(x, y);
+}
+
 class A {
 public:
     int i;
@@ -49,7 +53,7 @@ int main() {
     int (*&rfp)() = fp;
 
     // char *(*)(char *, char *)
-    char *(*sfp)(char *, char *) = &strcat;
+    char *(*sfp)(char *, char *) = &stcat;
 
     // int A::*
     int A::*mp = &A::i;
