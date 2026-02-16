@@ -7,7 +7,10 @@ struct node
   int key_value;
   shared_ptr<node> left;
   shared_ptr<node> right;
+  node(int kv, shared_ptr<node> l, shared_ptr<node> r) : key_value(kv), left(l), right(r) {}
 };
+
+
 
 class btree
 {
@@ -17,8 +20,7 @@ class btree
 				insert(key, root);
 			else
 			{
-				root = make_shared<node>();
-				root->key_value = key;
+				root = make_shared<node>(key, nullptr, nullptr);
 			}
 		}
 		shared_ptr<node> search(int key) {
@@ -39,23 +41,20 @@ class btree
                 return nullptr;
             }
 
-            shared_ptr<node> newRoot = make_shared<node>();
-
-            newRoot->key_value = originalRoot->key_value;
-            newRoot->left = copy(originalRoot->left);
-            newRoot->right = copy(originalRoot->right);
+            shared_ptr<node> newRoot = make_shared<node>(originalRoot->key_value,
+                                                         copy(originalRoot->left),
+                                                         copy(originalRoot->right));
 
             return newRoot;
         }
 		void insert(int key, shared_ptr<node>& leaf) {
-			if (key< leaf->key_value)
+			if (key < leaf->key_value)
 			{
 				if (leaf->left != nullptr)
 					insert(key, leaf->left);
 				else
 				{
-					leaf->left = make_shared<node>();
-					leaf->left->key_value = key;
+					leaf->left = make_shared<node>(key, nullptr, nullptr);
 				}
 			}
 			else if (key >= leaf->key_value)
@@ -64,8 +63,7 @@ class btree
 					insert(key, leaf->right);
 				else
 				{
-					leaf->right = make_shared<node>();
-					leaf->right->key_value = key;
+					leaf->right = make_shared<node>(key, nullptr, nullptr);
 				}
 			}
 		}
